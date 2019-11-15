@@ -13,13 +13,13 @@ DatabaseInfo::DatabaseInfo()
 	connected = false;
 }
 
-DatabaseInfo::DatabaseInfo(string databaseAddress, string databasePort, string databaseName)
+DatabaseInfo::DatabaseInfo(string databaseAddress, string databasePort, string databaseName, string userName, string password)
 {
 	this->databaseAddress = databaseAddress;
 	this->databasePort = databasePort;
 	this->databaseName = databaseName;
 	
-	databaseConnect = "host= " + databaseAddress + " port= " + databasePort + " dbname=" + databaseName + " user=postgres password=library2";
+	databaseConnect = "host= " + databaseAddress + " port= " + databasePort + " dbname=" + databaseName + " user=" + userName + " password=" + password;	
 	
 	connected = false;
 }
@@ -36,6 +36,60 @@ bool DatabaseInfo::connectDatabase()
 	{
 		connected = false;
 		return false;
+	}
+}
+
+int DatabaseInfo::getNewID()
+{
+	string sql = "SELECT MAX(id) FROM locationID;";
+	try{
+		connection conn(databaseConnect);
+		if(!conn.is_open()){
+			cout << "Failed connection" << endl;
+			return -1;
+		}
+		
+		nontransaction N(conn);
+		
+		result R(N.exec(sql));
+			
+		for(result::const_iterator i = R.begin(); i != R.end(); ++i) {
+			return i[0].as<int>();
+		}
+	}
+	catch (const exception &e) {
+		cout << "Error: " << e.what() << endl;
+	}
+}
+
+bool DatabaseInfo::addDevice(string idName)
+{
+	int newID = getNewID();
+	if(newID == -1)
+		return false;
+	else
+	{
+		newID++;
+		
+		string sql = "INSERT INTO locationID(id, name) VALUES (";
+		sql += to_string(newID) + ", '" + idName + "');";
+		
+		try{
+			connection conn(databaseConnect);
+			if(!conn.is_open()){
+				cout << "Failed open" << endl;
+				return false;
+			}
+			
+			work N(conn);
+			N.exec(sql);
+			N.commit();
+			return true;
+		}
+		catch (const exception &e) {
+			cout << "Error: " << e.what() << endl;
+			return false;
+		}
 	}
 }
 
@@ -85,22 +139,19 @@ bool DatabaseInfo::updateCurInfo(int id, int moveIn, int moveOut)
 		}
 		catch (const exception &e) 
 		{
-			cout << "Erorroor " << e.what() << endl;
+			cout << "Error: " << e.what() << endl;
 			delete []count;
 			return false;
 		}
 	}
 	else
 	{
-		cout << "Errorr: Failed to getCurrentCount" << endl;
+		cout << "Error: Failed to getCurrentCount" << endl;
 		delete []count;
 		return false;
 	}
 	delete []count;
 }
-
-
-
 
 bool DatabaseInfo::getCurrentCount(int id, int *count)
 {
@@ -131,7 +182,7 @@ bool DatabaseInfo::getCurrentCount(int id, int *count)
 		return true;
 	}
 	catch (const exception &e) {
-		cout << "Erorroor " << e.what() << endl;
+		cout << "Error: " << e.what() << endl;
 		return false;
 	}
 }
