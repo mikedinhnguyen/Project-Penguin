@@ -35,6 +35,42 @@ bool ConfigFile::fileRead()
 	return readFile;
 }
 
+bool ConfigFile::changeValue(string configName, string value)
+{
+	//Make sure that we have read the file first
+	if(!readFile)
+	{
+		std::cout << "Error: File has not been read yet. Please read file first" << endl;
+		return false;
+	}
+	
+	file.open(fileName);
+	if(!file) 
+	{
+		std::cout << "Unable to locate and open file" << std::endl;
+		return false;
+	}
+	else
+	{
+		int pos = fileText.find(configName);
+		
+		if(pos == string::npos)
+		{
+			cout << "Unable to locate configName" << endl;
+			return false;
+		}
+		
+		pos += configName.length() + 1;
+		
+		string restFile = fileText.substr(pos);
+		
+		file.seekp(pos);
+		file << value << restFile;
+		file.close();
+		return true;
+	}
+}
+
 bool ConfigFile::getConfigText()
 {
 	file.open(fileName);
@@ -53,7 +89,6 @@ bool ConfigFile::getConfigText()
 		string temp;
 		while(getline(file, temp))
 		{
-			//cout << temp << endl;
 			fileText += temp + '\n';
 		}
 	}

@@ -8,7 +8,7 @@
 class ConfigFile
 {
 	private:
-		std::ifstream file;
+		std::fstream file;
 		std::string fileName;
 		std::string fileText;
 		bool readFile;
@@ -19,6 +19,8 @@ class ConfigFile
 		
 		void changeFileName(std::string fileName);
 		void fileTextReset();
+		
+		bool changeValue(std::string configName, std::string value);
 		
 		//Gets all the text in the config file
 		bool getConfigText();
