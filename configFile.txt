@@ -1,0 +1,9 @@
+databaseAddress=10.0.0.220
+databasePort=5432
+databaseMain=testdb
+databaseUser=postgres
+databasePassword=library2
+deviceName=name of place
+
+//Do not change below
+deviceID=
