@@ -71,6 +71,55 @@ bool ConfigFile::changeValue(string configName, string value)
 	}
 }
 
+bool ConfigFile::backupWrite(int id, int moveIn, int moveOut)
+{
+	file.open(fileName, ios::out | ios::app);
+	if(!file)
+	{
+		cout << "Unable to locate and open file. BackupWrite fail." << endl;
+		return false;
+	}
+	else
+	{
+		file << id << " " << moveIn << " " << moveOut << "\n";
+		file.close();
+		return true;
+	}
+}
+
+bool ConfigFile::backupRead(std::vector<std::string> *backupData)
+{
+	file.open(fileName);
+	
+	//If we're unable to open config file, print error
+	//Return false could not open
+	if(!file) 
+	{
+		std::cout << "backupRead: Unable to locate and open file" << std::endl;
+		return false;
+	}
+	else
+	{
+		//Go through entire file and get the text to store into string
+		string temp;
+		while(getline(file, temp))
+		{
+			backupData->push_back(temp);
+		}
+	}
+	file.close();
+	
+	file.open(fileName, ios::out | ios::trunc);
+	if(!file) 
+	{
+		std::cout << "backupRead: Failed to delete old data." << std::endl;
+		//return false;
+	}
+	file.close();
+	
+	return true;
+}
+
 bool ConfigFile::getConfigText()
 {
 	file.open(fileName);

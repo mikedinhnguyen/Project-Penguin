@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 
 class ConfigFile
 {
@@ -21,6 +22,9 @@ class ConfigFile
 		void fileTextReset();
 		
 		bool changeValue(std::string configName, std::string value);
+		
+		bool backupWrite(int id, int moveIn, int moveOut);
+		bool backupRead(std::vector<std::string> *backupData);
 		
 		//Gets all the text in the config file
 		bool getConfigText();
