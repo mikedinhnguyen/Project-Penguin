@@ -8,7 +8,7 @@ class Tracker {
 private:
 	int frameHeight, frameWidth, maxMissingFrames;
 	double maxDistance;
-	vector<Centroid> currentCentroids;
+	std::vector<Centroid> currentCentroids;
 	HOGDescriptor hog;
 
 public:
@@ -33,7 +33,7 @@ public:
 	 * @param rects a vector that will store all detected objects in the form of rectangles
 	 * @param weights a vector that will store the weights of the detected objects
 	 */
-	void detect(Mat img, vector<Rect> &rects, vector<double> &weights);
+	void detect(Mat img, std::vector<Rect> &rects, std::vector<double> &weights);
 
 	/**
 	 * Track objects and return the number of people walking left and right
@@ -42,7 +42,7 @@ public:
 	 * @return the number of people walking to the right of the screen (if positive), or the number of
 	 * people walking to the left of the screen (if negative)
 	 */
-	int track(vector<Rect> rects);
+	int track(std::vector<Rect> rects);
 
 	/**
 	 * Convert a vector of rectangles to a vector of centroids
@@ -50,7 +50,7 @@ public:
 	 * @param rects a vector of rectangles
 	 * @return a vector of centroids
 	 */
-	vector<Centroid> toCentroids(vector<Rect> rects);
+	std::vector<Centroid> toCentroids(std::vector<Rect> rects);
 };
 
 #endif

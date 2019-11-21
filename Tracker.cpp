@@ -11,15 +11,15 @@ Tracker::Tracker(int _frameHeight, int _frameWidth, int _maxMissingFrames, doubl
 }
 
 // Detect people in an image
-void Tracker::detect(Mat img, vector<Rect> &rects, vector<double> &weights) {
+void Tracker::detect(Mat img, std::vector<Rect> &rects, std::vector<double> &weights) {
 	hog.detectMultiScale(img, rects, weights);
 }
 
 // Track objects and return the number of people walking left and right
-int Tracker::track(vector<Rect> rects) {
+int Tracker::track(std::vector<Rect> rects) {
 	int crossCount = 0;
-	vector<Centroid> newCentroids = toCentroids(rects);
-	vector<Centroid> updatedCentroids;
+	std::vector<Centroid> newCentroids = toCentroids(rects);
+	std::vector<Centroid> updatedCentroids;
 
 	// Match current centroids with new centroids
 	while (true) {
@@ -74,8 +74,8 @@ int Tracker::track(vector<Rect> rects) {
 }
 
 // Convert a vector of rectangles to a vector of centroids
-vector<Centroid> Tracker::toCentroids(vector<Rect> rects) {
-	vector<Centroid> centroids;
+std::vector<Centroid> Tracker::toCentroids(std::vector<Rect> rects) {
+	std::vector<Centroid> centroids;
 	for (int i = 0; i < (int) rects.size(); i++) {
 		centroids.push_back(Centroid(rects[i].x+rects[i].width/2, rects[i].y+rects[i].height/2));
 	}
