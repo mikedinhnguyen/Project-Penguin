@@ -3,7 +3,7 @@
 
 int main() {
 	// Video file location. Later on switch to camera feed.
-	std::string videoPath = "../town_center.avi";
+	std::string videoPath = "../library2.mp4";
 
 	// Create a video reader interface
 	VideoCapture vid(videoPath);
@@ -14,11 +14,10 @@ int main() {
 
 	// Set up the tracker
 	int leftCount = 0, rightCount = 0;
-	double scaleFactor = 0.5;
-	int height = img.rows * scaleFactor;
-	int width = img.cols * scaleFactor;
-	int maxMissingFrames = 10;
-	double maxDistance = 50.0;		// Increase this number to increase sensitivity
+	int height = 600;
+	int width = 800;
+	int maxMissingFrames = 20;
+	double maxDistance = 100.0;		// Increase this number to increase sensitivity
 	Tracker tracker(height, width, maxMissingFrames, maxDistance);
 
 	// Set up the database connection
@@ -48,6 +47,10 @@ int main() {
 	time_t startTime = time(NULL);
 	time_t timeSinceLastUpdate = startTime;
 
+	VideoWriter outputVideo;
+	Size S = Size(width, height);
+	outputVideo.open("../library2_out.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, S, true);
+
 	// Start tracking loop
 	while (true) {
 		// Scale the image
@@ -62,8 +65,7 @@ int main() {
 		line(img, Point(width/2, 0), Point(width/2, height), Scalar(0,0,255), 2);
 
 		// Draw rectangles
-		for( size_t i = 0; i < rects.size(); i++ )
-		{
+		for (int i = 0; i < (int)rects.size(); i++) {
 			rectangle(img, rects[i], cv::Scalar(0,0,255), 3);
 
 			// Display counts
@@ -99,6 +101,8 @@ int main() {
 			// how to insert entry into the database?
 			timeSinceLastUpdate = currentTime;
 		}
+
+		outputVideo << img;
 
 		// Grab the next frame
 		vid >> img;
