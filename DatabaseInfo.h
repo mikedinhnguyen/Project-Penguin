@@ -31,7 +31,7 @@ class DatabaseInfo
 		bool updateCurInfo();
 		bool addTimeInfo();
 		
-		bool addNewInfo(int id, int moveIn, int moveOut);
+		bool addNewInfo(int id, int moveIn, int moveOut, std::string date);
 		bool updateCurInfo(int id, int moveIn, int moveOut);
 };
 

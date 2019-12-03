@@ -1,4 +1,5 @@
 #include "Tracker.h"
+#include "ConfigFile.h"
 #include "DatabaseInfo.h"
 
 int main() {
@@ -22,31 +23,54 @@ int main() {
 	Tracker tracker(height, width, maxMissingFrames, maxDistance);
 
 	// Set up the database connection
-	std::string databaseAddress = "127.0.0.1";
-	std::string databasePort = "5432";
-	std::string databaseMain = "testdb";
-	std::string databaseUser = "postgres";
-	std::string databasePassword = "library2";
-	std::string deviceName = "name of place";
-	DatabaseInfo db = DatabaseInfo(databaseAddress, databasePort, databaseMain, databaseUser, databasePassword);
-	try {
-		db.connectDatabase();
-		std::cout << "Connected to the database.\n";
-		if (db.addDevice(deviceName)) {
-			std::cout << "Device successfully registered.\n";
+	const int NUM_CONFIG = 7;
+	const std::string fileName = "../src/configFile.txt";
+
+	//array with all the configfile names
+	std::string configNames[] = {"databaseAddress",
+								 "databasePort",
+							     "databaseMain",
+							     "databaseUser",
+							     "databasePassword",
+							     "deviceID",
+							     "deviceName"};
+
+	//array to store all configfile values. index matches with configNames[]
+	std::string values[NUM_CONFIG];
+	int deviceNumber = -1;
+
+	ConfigFile *file = new ConfigFile(fileName);
+	DatabaseInfo *database = nullptr;
+
+	//Try to read the configfile with names and get the values
+	if(file->readConfig(configNames, values, NUM_CONFIG))
+	{
+//		for(int i = 0 ; i < NUM_CONFIG; i++)
+//			std::cout << values[i] << std::endl;
+
+		//Make sure device isn't already added by checking if a deviceID exists.
+		if(values[5].empty())
+		{
+			std::cout << "Error: configFile has no deviceID." << std::endl;
+			std::cout << "Run AddDevice first." << std::endl;
 		}
-		else {
-			std::cout << "Failed to register device.\n";
+		else
+		{
+			//Create and connect to database
+			database = new DatabaseInfo(values[0], values[1], values[2], values[3], values[4]);
+			deviceNumber = std::stoi(values[5]);
 		}
-	}
-	catch (const std::exception& e) {
-		std::cout << e.what() << "\n";
 	}
 
 	// Set up update interval
-	int updateInterval = 60;  // update interval in seconds
+	int updateInterval = 5;  // update interval in seconds
 	time_t startTime = time(NULL);
 	time_t timeSinceLastUpdate = startTime;
+
+	// Set up backup
+	std::string backupFileName = "../src/backupFile.txt";
+	ConfigFile *backupFile = new ConfigFile(backupFileName);
+	std::vector<std::string> backupData;
 
 	// Start tracking loop
 	while (true) {
@@ -97,7 +121,48 @@ int main() {
 		if (currentTime - timeSinceLastUpdate >= updateInterval) {
 			std::string date(ctime(&currentTime));
 			// how to insert entry into the database?
+			if (database->addNewInfo(deviceNumber, leftCount, rightCount, date)) {
+				std::cout << "a\n";
+				leftCount = 0;
+				rightCount = 0;
+			}
+			else {
+				std::cout << "Failed to insert to database, trying to insert to the backup.\n";
+				backupFile->backupWrite(deviceNumber, leftCount, rightCount, date);
+			}
 			timeSinceLastUpdate = currentTime;
+
+			// Make a backup
+			backupData.clear();
+			backupFile->backupRead(&backupData);
+			std::cout << backupData.size() << "\n";
+			for(std::vector<std::string>::iterator it = backupData.begin(); it != backupData.end(); ++it)
+			{
+				std::cout << "test\n";
+				if (*it == "") {	// ignore empty string
+					continue;
+				}
+				std::cout << *it << std::endl;
+				int firstPos = (*it).find(' ');
+				int secondPos = (*it).find(' ', firstPos + 1);
+				int thirdPos = (*it).find(' ', secondPos + 1);
+				std::cout << (*it).substr(0, firstPos) << " ";
+				int tempDeviceID = stoi((*it).substr(0, firstPos));
+				std::cout << (*it).substr(firstPos + 1, secondPos - firstPos) << std::endl;
+				int tempMoveIn = stoi((*it).substr(firstPos + 1, secondPos - firstPos));
+				int tempMoveOut = stoi((*it).substr(secondPos + 1, thirdPos - secondPos));
+				std::string timeInfo = (*it).substr(thirdPos + 1);
+
+				//cout << tempDeviceID << " " << tempMoveIn << " " << tempMoveOut << endl;
+				if(database->addNewInfo(tempDeviceID, tempMoveIn, tempMoveOut, date))
+				{
+					std::cout << "Success: " << tempDeviceID << " " << tempMoveIn << " " << tempMoveOut << std::endl;
+				}
+				else {
+					backupFile->backupWrite(deviceNumber, leftCount, rightCount, date);
+				}
+				std::cout << "--------------" << std::endl;
+			}
 		}
 
 		// Grab the next frame

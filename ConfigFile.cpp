@@ -71,7 +71,7 @@ bool ConfigFile::changeValue(string configName, string value)
 	}
 }
 
-bool ConfigFile::backupWrite(int id, int moveIn, int moveOut)
+bool ConfigFile::backupWrite(int id, int moveIn, int moveOut, std::string date)
 {
 	file.open(fileName, ios::out | ios::app);
 	if(!file)
@@ -81,7 +81,7 @@ bool ConfigFile::backupWrite(int id, int moveIn, int moveOut)
 	}
 	else
 	{
-		file << id << " " << moveIn << " " << moveOut << "\n";
+		file << id << " " << moveIn << " " << moveOut << " " << date << "\n";
 		file.close();
 		return true;
 	}

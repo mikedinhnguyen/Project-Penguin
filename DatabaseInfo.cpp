@@ -93,10 +93,10 @@ bool DatabaseInfo::addDevice(string idName)
 	}
 }
 
-bool DatabaseInfo::addNewInfo(int id, int moveIn, int moveOut)
+bool DatabaseInfo::addNewInfo(int id, int moveIn, int moveOut, std::string date)
 {
 	string squery = "INSERT INTO locationTimeInfo(id, moveIn, moveOut, time) VALUES (";
-	squery += to_string(id) + ", " + to_string(moveIn) + ", " + to_string(moveOut) + ", clock_timestamp());";
+	squery += to_string(id) + ", " + to_string(moveIn) + ", " + to_string(moveOut) + ", '" + date + "');";
 	
 	try{
 		connection conn(databaseConnect);
@@ -113,17 +113,20 @@ bool DatabaseInfo::addNewInfo(int id, int moveIn, int moveOut)
 	catch (const exception &e) {
 		cout << "Failed to addNewInfo: " << e.what() << endl;
 		//backupInfo(id, moveIn, moveOut);
+		return false;
 	}
-	
-	updateCurInfo(id, moveIn, moveOut);
+
+	// updateCurInfo(id, moveIn, moveOut);
+	return true;
 }
+
 bool DatabaseInfo::updateCurInfo(int id, int moveIn, int moveOut)
 {
 	int *count = new int[2];
 	if(getCurrentCount(id, count))
 	{
 		*(count) += moveIn;
-		*(count + 1) += moveOut;
+		*(count + 1) += moveOut;updateCurInfo(id, moveIn, moveOut);
 		string sql = "UPDATE locationCurInfo SET moveIn = " + to_string(*(count)) + ", moveOut = " + to_string(*(count + 1)) + "WHERE id = " + to_string(id) + ";";
 		try
 		{
@@ -151,6 +154,7 @@ bool DatabaseInfo::updateCurInfo(int id, int moveIn, int moveOut)
 		return false;
 	}
 	delete []count;
+	return true;
 }
 
 bool DatabaseInfo::getCurrentCount(int id, int *count)

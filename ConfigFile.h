@@ -23,7 +23,7 @@ class ConfigFile
 		
 		bool changeValue(std::string configName, std::string value);
 		
-		bool backupWrite(int id, int moveIn, int moveOut);
+		bool backupWrite(int id, int moveIn, int moveOut, std::string date);
 		bool backupRead(std::vector<std::string> *backupData);
 		
 		//Gets all the text in the config file
