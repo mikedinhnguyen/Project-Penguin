@@ -39,7 +39,7 @@
     }
     
     if ($user_bool == true && $pass_bool == true){
-        header('Location: hub.html'); // hub.html or hub.php is fine
+        header('Location: device.php'); // changing to have a device middle man
     }
     else{
         header('Location: login.php');
