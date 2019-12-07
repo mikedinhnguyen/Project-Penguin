@@ -49,7 +49,7 @@ int main(int argc, char ** argv){
 	// timeinfo = localtime(&timeDate_end);
 	// cout << "End time and date: " << asctime(timeinfo) << endl;
 	double elapsedTime = difftime(timer_end, timer_begin);
-	cout << "Time taken to complete: " << elaspedTime << endl;
+	cout << "Time taken to complete: " << elapsedTime << endl;
 }
 				
     
