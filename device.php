@@ -15,8 +15,8 @@
                             <input name="submit" type="submit" value="Device 1">
                         </form>
                     </li>
-                    <li><input name="submit2" type="submit" value="Device 2 (coming soon)"></li>
-                    <li><input name="submit3" type="submit" value="Device 3 (coming soon)"></li>
+                    <li><input name="submit2" type="button" value="Device 2 (unimplemented)"></li>
+                    <li><input name="submit3" type="button" value="Device 3 (unimplemented)"></li>
                     <li><form name="form1" method="post" action="login.php">
                     <input name="submit2" type="submit" id="submit2" value="Log out">
                     </form>
