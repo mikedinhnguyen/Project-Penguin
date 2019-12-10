@@ -3,7 +3,6 @@ CSE 120 (software engineering) project
 
 Database:
   Postgresql:
-	
     Uses Postgressql database. Can be installed on linux (sudo apt-get install postgresql)
     Setup:
       Connect to database in terminal(default: sudo -u postgres psql)
@@ -16,7 +15,6 @@ Database:
           CREATE TABLE locationTimeInfo(ID INT NOT NULL, moveIn INT, moveOut INT, TIMESTAMP TEXT); 
     
   Libpqxx:
-	
     Used for connecting to the database
     Installing libpqxx:
       install libpq (apt-get install libpq-dev)
