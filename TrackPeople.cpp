@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
 		std::ofstream outFile(imageList);
 
 		// Video file location. Use a video file for now. Later on switch to camera feed.
-		std::string videoPath = "../library3.mp4";
+		std::string videoPath = "../library33.mp4";
 
 		// Create a video reader interface
 		VideoCapture vid(videoPath);
@@ -48,6 +48,10 @@ int main(int argc, char *argv[]) {
 
 		// Grab the first frame
 		vid >> img;
+		if (img.empty()) {
+			std::cout << "Unable to find video file.\n";
+			return 0;
+		}
 
 		// Set up time variables and recording length
 		time_t startTime = time(NULL), currentTime = time(NULL), prevTime = 0;
@@ -148,7 +152,7 @@ int main(int argc, char *argv[]) {
 		time_t timeOfLastUpdate = startTime;
 
 		// Set up backup file
-		std::string backupFileName = "../src/backupFile.txt";
+		std::string backupFileName = "backupFile.txt";
 		ConfigFile *backupFile = new ConfigFile(backupFileName);
 		std::vector<std::string> backupData;
 
