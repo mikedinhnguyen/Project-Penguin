@@ -29,3 +29,19 @@ Used for connecting to the database
 - ./configure --disable-documentation
 - make
 - sudo make install
+
+# Adding a new device:
+
+- Download all files
+
+- Edit configFile.txt (except for deviceId)
+
+- Compile the AddDevice Code
+
+`(g++ -std=c++11 AddDevice.cpp DatabaseInfo.cpp ConfigFile.cpp -o AddDevice -lpqxx -lpq)`
+
+- Run AddDevice(./AddDevice)
+ 
+configFile deviceID should be updated with an ID. Manually change deviceID if writing failed.
+
+DO NOT CHANGE ID. This is how the database identifies your device. You can delete deviceID and rerun this to add device again
