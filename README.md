@@ -44,4 +44,8 @@ Used for connecting to the database
  
 configFile deviceID should be updated with an ID. Manually change deviceID if writing failed.
 
-DO NOT CHANGE ID. This is how the database identifies your device. You can delete deviceID and rerun this to add device again
+DO NOT CHANGE ID. This is how the database identifies your device. You can delete deviceID and rerun this to add device again.
+
+# Running the program:
+
+Do some stuff
