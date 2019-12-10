@@ -143,7 +143,7 @@ int main(int argc, char *argv[]) {
 		}
 
 		// Set up update interval
-		int updateInterval = 60;  // update interval in seconds
+		int updateInterval = 5;  // update interval in seconds
 		time_t startTime = 0;
 		time_t timeOfLastUpdate = startTime;
 
@@ -219,10 +219,10 @@ int main(int argc, char *argv[]) {
 					leftCount = 0;
 					rightCount = 0;
 				}
-				else {
-					// Insertion failed, try inserting to the backup instead
-					std::cout << "Failed to insert to database, trying to insert to the backup.\n";
-					backupFile->backupWrite(deviceNumber, leftCount, rightCount, date);
+				else if (backupFile->backupWrite(deviceNumber, leftCount, rightCount, date)) {
+					// Insert to backup, also reset counters
+					leftCount = 0;
+					rightCount = 0;
 				}
 				timeOfLastUpdate = currentTime;
 
@@ -245,12 +245,12 @@ int main(int argc, char *argv[]) {
 					int tempMoveOut = stoi((*it).substr(secondPos + 1, thirdPos - secondPos));
 					std::string timeInfo = (*it).substr(thirdPos + 1);
 
-					if(database->addNewInfo(tempDeviceID, tempMoveIn, tempMoveOut, date))
+					if(database->addNewInfo(tempDeviceID, tempMoveIn, tempMoveOut, timeInfo))
 					{
 						std::cout << "Success: " << tempDeviceID << " " << tempMoveIn << " " << tempMoveOut << std::endl;
 					}
 					else {
-						backupFile->backupWrite(deviceNumber, leftCount, rightCount, date);
+						backupFile->backupWrite(tempDeviceID, tempMoveIn, tempMoveOut, timeInfo);
 					}
 					std::cout << "--------------" << std::endl;
 				}
@@ -267,7 +267,7 @@ int main(int argc, char *argv[]) {
 
 		while (inFile >> imageFile) {
 			const char *fileName = imageFile.c_str();
-			remove(fileName);
+			remove(fileName);	// Remove image file
 		}
 
 		inFile.close();
